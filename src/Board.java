@@ -1,19 +1,41 @@
 
-import java.awt.Graphics;
-import java.util.Timer;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.Timer;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author victoralonso
  */
 public class Board extends javax.swing.JPanel {
-    
+
+    class MyKeyAdapter extends KeyAdapter {
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            switch (e.getKeyCode()) {
+                case KeyEvent.VK_UP:
+                    snake.setDirection(Direction.UP);
+                    break;
+                case KeyEvent.VK_DOWN:
+                    snake.setDirection(Direction.DOWN);
+                    break;
+                case KeyEvent.VK_RIGHT:
+                    snake.setDirection(Direction.RIGHT);
+                    break;
+                case KeyEvent.VK_LEFT:
+                    snake.setDirection(Direction.LEFT);
+                    break;
+            }
+            repaint();
+        }
+    }
+
     private int numRows;
     private int numCols;
     private Snake snake;
@@ -21,37 +43,93 @@ public class Board extends javax.swing.JPanel {
     private Food specialFood;
     private Timer snakeTimer;
     private Timer specialFoodTimer;
-    private int DeltaTime;
+    private int deltaTime;
+    private Node[][] playBoard;
 
-    /**
-     * Creates new form Board
-     */
     public Board() {
         initComponents();
         myInit();
+        
+        snakeTimer = new Timer(deltaTime, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                boolean play = true;
+                while(play){
+                    if(colideFood()){
+                        
+                    }else{
+                        
+                    }
+                }
+                gameOver();
+            }
+        });
+        
+        MyKeyAdapter keyAdepter = new MyKeyAdapter();
+        addKeyListener(keyAdepter);
     }
-    
+
     private void myInit() {
-        // Finish this method
+        snake = new Snake(24, 24, 4);
+        deltaTime = 500;
+        food = new Food(snake);
+        specialFood = new Food(snake, true);
     }
-    
+
     public Board(int numRows, int numCols) {
-        // Finish this method
+        this();
+        this.numCols = numCols;
+        this.numRows = numRows;
+        playBoard = new Node[numRows][numCols];
     }
-    
+
     public boolean colideFood() {
-        // Finish this method
+        
         return false;
     }
-    
+
     public void gameOver() {
         // Finish this method
     }
-    
-    @Override 
-    protected void paintComponent(Graphics g)  {
-        // Finish this method
-        // Paint the Snake and the food here
+
+    private int squareWidth() {
+        return getWidth() / numCols;
+    }
+
+    private int squareHeight() {
+        return getHeight() / numRows;
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2d = (Graphics2D) g;
+        paintPlayBoard(g2d);
+        snake.paint(g2d, squareWidth(), squareHeight());
+        food.paint(g2d, squareWidth(), squareHeight());
+    }
+
+    private void paintPlayBoard(Graphics2D g2d) {
+        for (int row = 0; row < playBoard.length; row++) {
+            for (int col = 0; col < playBoard[0].length; col++) {
+                drawSquare(g2d, row, col, new Color(51, 255, 51));
+            }
+        }
+    }
+
+    private void drawSquare(Graphics2D g, int row, int col, Color color) {
+        /*Color colors[] = {new Color(51,255,51), new Color(255,51,51),
+           new Color(0,0,0), new Color(0,51,255),};*/
+        int x = col * squareWidth();
+        int y = row * squareHeight();
+        g.setColor(color);
+        g.fillRect(x + 1, y + 1, squareWidth() - 2, squareHeight() - 2);
+        g.setColor(color.brighter());
+        g.drawLine(x, y + squareHeight() - 1, x, y);
+        g.drawLine(x, y, x + squareWidth() - 1, y);
+        g.setColor(color.darker());
+        g.drawLine(x + 1, y + squareHeight() - 1, x + squareWidth() - 1, y + squareHeight() - 1);
+        g.drawLine(x + squareWidth() - 1, y + squareHeight() - 1, x + squareWidth() - 1, y + 1);
     }
 
     /**
