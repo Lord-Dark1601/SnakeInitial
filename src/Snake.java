@@ -42,6 +42,10 @@ public class Snake {
     public void setDirection(Direction direction) {
         this.direction = direction;
     }
+    
+    public void setRemainingNodesToCreate(int remainingNodesToCreate) {
+        this.remainingNodesToCreate += remainingNodesToCreate;
+    }
 
     public void paint(Graphics g, int squareWidth, int squareHeight) {
         body.forEach((node) -> {
@@ -55,7 +59,27 @@ public class Snake {
     }
 
     public void move() {
-        // Finish this method
+        Node insert = null;
+        switch (direction) {
+            case UP:
+                insert = new Node(body.get(0).getRow() - 1, body.get(0).getCol());
+                break;
+            case DOWN:
+                insert = new Node(body.get(0).getRow() + 1, body.get(0).getCol());
+                break;
+            case RIGHT:
+                insert = new Node(body.get(0).getRow(), body.get(0).getCol()+1);
+                break;
+            case LEFT:
+                insert = new Node(body.get(0).getRow(), body.get(0).getCol()-1);
+                break;
+        }
+        body.add(0, insert);
+        if (remainingNodesToCreate == 0) {
+            body.remove(body.size() - 1);
+        } else {
+            remainingNodesToCreate--;
+        }
     }
 
 }

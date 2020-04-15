@@ -1,6 +1,12 @@
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.List;
 import javax.swing.Timer;
 
 /*
@@ -21,15 +27,19 @@ public class Board extends javax.swing.JPanel {
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_UP:
                     snake.setDirection(Direction.UP);
+                    System.out.println("Direction UP");
                     break;
                 case KeyEvent.VK_DOWN:
                     snake.setDirection(Direction.DOWN);
+                    System.out.println("Direction Down");
                     break;
                 case KeyEvent.VK_RIGHT:
                     snake.setDirection(Direction.RIGHT);
+                    System.out.println("Direction Right");
                     break;
                 case KeyEvent.VK_LEFT:
                     snake.setDirection(Direction.LEFT);
+                    System.out.println("Direction Left");
                     break;
             }
             repaint();
@@ -44,27 +54,52 @@ public class Board extends javax.swing.JPanel {
     private Timer snakeTimer;
     private Timer specialFoodTimer;
     private int deltaTime;
+    private int foodDeltaTime;
+    private Node next;
     private Node[][] playBoard;
 
     public Board() {
+
+        setFocusable(true);
         initComponents();
         myInit();
-        
+
         snakeTimer = new Timer(deltaTime, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                boolean play = true;
-                while(play){
-                    if(colideFood()){
-                        
-                    }else{
-                        
-                    }
-                }
+                next = createNextNode();
                 gameOver();
+                if (snake.canMove(next.getRow(), next.getCol())) {
+                    if (colideFood()) {
+                        snake.setRemainingNodesToCreate(1);
+                        food = new Food(snake);
+                    }
+                    snake.move();
+                }
+                repaint();
             }
         });
-        
+
+        specialFoodTimer = new Timer(foodDeltaTime, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                specialFood = new Food(snake, true);
+                int random = (int) (Math.random() * 5000 + 7000);
+                Thread threat = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        
+                    }
+                });
+                specialFood.delete();
+                foodDeltaTime = (int) (Math.random() * 10000 + 30000);
+                specialFoodTimer.setDelay(foodDeltaTime);
+                repaint();
+            }
+        });
+
+        snakeTimer.start();
+        specialFoodTimer.start();
         MyKeyAdapter keyAdepter = new MyKeyAdapter();
         addKeyListener(keyAdepter);
     }
@@ -72,6 +107,7 @@ public class Board extends javax.swing.JPanel {
     private void myInit() {
         snake = new Snake(24, 24, 4);
         deltaTime = 500;
+        foodDeltaTime = 15000;
         food = new Food(snake);
         specialFood = new Food(snake, true);
     }
@@ -84,12 +120,43 @@ public class Board extends javax.swing.JPanel {
     }
 
     public boolean colideFood() {
-        
-        return false;
+        return food.getPosition().getRow() == next.getRow() && food.getPosition().getCol() == next.getCol();
     }
 
     public void gameOver() {
-        // Finish this method
+        if (colideBorders() || colideBody()) {
+            snakeTimer.stop();
+        }
+    }
+
+    private boolean colideBorders() {
+        return next.getRow() <= 0 || next.getRow() >= numRows || next.getCol() <= 0 || next.getCol() >= numCols;
+    }
+
+    private boolean colideBody() {
+        List<Node> body = snake.getList();
+        return body.stream().anyMatch((node) -> (next.getRow() == node.getRow() && next.getCol() == node.getCol()));
+    }
+
+    private Node createNextNode() {
+        Node reference = (Node) (snake.getList().get(0));
+        Node nextNode = new Node(reference.getRow(), reference.getCol());
+        switch (snake.getDirection()) {
+            case UP:
+                nextNode.setRow(nextNode.getRow() - 1);
+                break;
+            case DOWN:
+                nextNode.setRow(nextNode.getRow() + 1);
+                break;
+            case RIGHT:
+                nextNode.setCol(nextNode.getCol() + 1);
+                break;
+            case LEFT:
+                nextNode.setCol(nextNode.getCol() - 1);
+                break;
+        }
+
+        return nextNode;
     }
 
     private int squareWidth() {
@@ -104,7 +171,7 @@ public class Board extends javax.swing.JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
-        paintPlayBoard(g2d);
+        //paintPlayBoard(g2d);
         snake.paint(g2d, squareWidth(), squareHeight());
         food.paint(g2d, squareWidth(), squareHeight());
     }

@@ -27,6 +27,14 @@ public class Food {
         this.isSpecial = isSpecial;
     }
 
+    public Node getPosition() {
+        return position;
+    }
+
+    public boolean isIsSpecial() {
+        return isSpecial;
+    }
+
     public Node createRandomNode(Snake snake) {
         List<Node> body = snake.getList();
         Boolean in = true;
@@ -40,7 +48,6 @@ public class Food {
                 if (row == node.getRow() && col == node.getCol()) {
                     break;
                 }
-
             }
             in = false;
         }
@@ -56,5 +63,8 @@ public class Food {
         }
     }
 
-    // Create all the methods you need here
+    public void delete() {
+        position.setCol(-1);
+        position.setRow(-1);
+    }
 }
