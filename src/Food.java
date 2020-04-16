@@ -17,14 +17,10 @@ public class Food {
     private Node position;
     private boolean isSpecial;
 
-    public Food(Snake snake) {
-        position = createRandomNode(snake);
-        isSpecial = false;
-    }
-
     public Food(Snake snake, boolean isSpecial) {
-        this(snake);
+        position = createRandomNode(snake);
         this.isSpecial = isSpecial;
+
     }
 
     public Node getPosition() {
