@@ -15,6 +15,8 @@ public class MainGame extends javax.swing.JFrame {
      */
     public MainGame() {
         initComponents();
+        StartGame stg = new StartGame(this, true, board1);
+        stg.setVisible(true);
     }
 
     /**
@@ -26,19 +28,26 @@ public class MainGame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        board1 = new Board(50, 50);
+        scoreBoard1 = new ScoreBoard();
+        board1 = new Board(50,50, scoreBoard1, this);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        scoreBoard1.setBackground(new java.awt.Color(102, 102, 102));
+        scoreBoard1.setMinimumSize(new java.awt.Dimension(92, 25));
+        getContentPane().add(scoreBoard1, java.awt.BorderLayout.PAGE_END);
+
+        board1.setBackground(new java.awt.Color(51, 255, 51));
 
         javax.swing.GroupLayout board1Layout = new javax.swing.GroupLayout(board1);
         board1.setLayout(board1Layout);
         board1Layout.setHorizontalGroup(
             board1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGap(0, 436, Short.MAX_VALUE)
         );
         board1Layout.setVerticalGroup(
             board1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGap(0, 357, Short.MAX_VALUE)
         );
 
         getContentPane().add(board1, java.awt.BorderLayout.CENTER);
@@ -83,5 +92,6 @@ public class MainGame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private Board board1;
+    private ScoreBoard scoreBoard1;
     // End of variables declaration//GEN-END:variables
 }

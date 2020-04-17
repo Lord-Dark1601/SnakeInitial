@@ -8,8 +8,8 @@
  *
  * @author victoralonso
  */
-public class ScoreBoard extends javax.swing.JPanel {
-    
+public class ScoreBoard extends javax.swing.JPanel implements ScoreBoardIncrementer {
+
     private int score;
 
     /**
@@ -18,9 +18,19 @@ public class ScoreBoard extends javax.swing.JPanel {
     public ScoreBoard() {
         initComponents();
     }
-    
+
+    @Override
     public void incrementScore(int increment) {
-        // Finish this method. And add all you need to the class
+        score += increment;
+        scoreText.setText("Score: " + score);
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 
     /**
@@ -32,19 +42,30 @@ public class ScoreBoard extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        scoreText = new javax.swing.JLabel();
+
+        scoreText.setText("Score: 0");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(113, 113, 113)
+                .addComponent(scoreText)
+                .addContainerGap(129, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 39, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(scoreText)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel scoreText;
     // End of variables declaration//GEN-END:variables
 }
