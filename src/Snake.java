@@ -53,11 +53,6 @@ public class Snake {
         });
     }
 
-    public boolean canMove(int row, int col) {
-        // Finish this method
-        return true;
-    }
-
     public void move() {
         Node insert = null;
         switch (direction) {
