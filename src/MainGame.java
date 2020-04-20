@@ -38,16 +38,17 @@ public class MainGame extends javax.swing.JFrame {
         getContentPane().add(scoreBoard1, java.awt.BorderLayout.PAGE_END);
 
         board1.setBackground(new java.awt.Color(51, 255, 51));
+        board1.setPreferredSize(new java.awt.Dimension(500, 500));
 
         javax.swing.GroupLayout board1Layout = new javax.swing.GroupLayout(board1);
         board1.setLayout(board1Layout);
         board1Layout.setHorizontalGroup(
             board1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 436, Short.MAX_VALUE)
+            .addGap(0, 419, Short.MAX_VALUE)
         );
         board1Layout.setVerticalGroup(
             board1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 357, Short.MAX_VALUE)
+            .addGap(0, 328, Short.MAX_VALUE)
         );
 
         getContentPane().add(board1, java.awt.BorderLayout.CENTER);

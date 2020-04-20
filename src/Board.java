@@ -31,23 +31,19 @@ public class Board extends javax.swing.JPanel {
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_UP:
                     snake.setDirection(Direction.UP);
-                    System.out.println("Direction UP");
                     break;
                 case KeyEvent.VK_DOWN:
                     snake.setDirection(Direction.DOWN);
-                    System.out.println("Direction Down");
                     break;
                 case KeyEvent.VK_RIGHT:
                     snake.setDirection(Direction.RIGHT);
-                    System.out.println("Direction Right");
                     break;
                 case KeyEvent.VK_LEFT:
                     snake.setDirection(Direction.LEFT);
-                    System.out.println("Direction Left");
                     break;
                 case KeyEvent.VK_P:
-                    pauseGame.setVisible(true);
                     stopTimers();
+                    pauseGame.setVisible(true);
             }
             repaint();
         }
@@ -55,23 +51,23 @@ public class Board extends javax.swing.JPanel {
 
     private int numRows;
     private int numCols;
+    private int deltaTime;
+    private int foodDeltaTime;
+    private int timesLevelUp;
+    private boolean specialFoodVisible;
+    private String playerName;
     private Snake snake;
     private Food food;
     private Food specialFood;
-    private Timer snakeTimer;
-    private Timer specialFoodTimer;
-    private int deltaTime;
-    private int foodDeltaTime;
     private Node next;
     private Node[][] playBoard;
-    private boolean specialFoodVisible;
-    private ScoreBoardIncrementer scoreBoard;
-    private String playerName;
+    private Timer snakeTimer;
+    private Timer specialFoodTimer;
     private StartGame startGame;
     private PauseGame pauseGame;
+    private ScoreBoardIncrementer scoreBoard;
     private static final int VALOR_COMIDA_NORMAL = 1;
     private static final int VALOR_COMIDA_ESPECIAL = 4;
-    private int timesLevelUp;
     private static final int VALOR_RESTA_DELAY_DELTATIME = 25;
 
     public Board() {
@@ -252,10 +248,19 @@ public class Board extends javax.swing.JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
+        //paintPlayBoard(g2d);
         snake.paint(g2d, squareWidth(), squareHeight());
         food.paint(g2d, squareWidth(), squareHeight());
         if (specialFoodVisible) {
             specialFood.paint(g2d, squareWidth(), squareHeight());
+        }
+    }
+
+    private void paintPlayBoard(Graphics2D g2d) {
+        for (int row = 0; row < playBoard.length; row++) {
+            for (int col = 0; col < playBoard[0].length; col++) {
+                drawSquare(g2d, row, col, Color.pink);
+            }
         }
     }
 
