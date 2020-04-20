@@ -45,6 +45,9 @@ public class Board extends javax.swing.JPanel {
                     snake.setDirection(Direction.LEFT);
                     System.out.println("Direction Left");
                     break;
+                case KeyEvent.VK_P:
+                    pauseGame.setVisible(true);
+                    stopTimers();
             }
             repaint();
         }
@@ -65,8 +68,11 @@ public class Board extends javax.swing.JPanel {
     private ScoreBoardIncrementer scoreBoard;
     private String playerName;
     private StartGame startGame;
+    private PauseGame pauseGame;
     private static final int VALOR_COMIDA_NORMAL = 1;
     private static final int VALOR_COMIDA_ESPECIAL = 4;
+    private int timesLevelUp;
+    private static final int VALOR_RESTA_DELAY_DELTATIME = 25;
 
     public Board() {
 
@@ -82,7 +88,6 @@ public class Board extends javax.swing.JPanel {
                     gameOver();
                 } catch (IOException ex) {
                 }
-                //if (snake.canMove(next.getRow(), next.getCol())) {
                 if (colideFood()) {
                     if (colideNormalFood()) {
                         snake.setRemainingNodesToCreate(VALOR_COMIDA_NORMAL);
@@ -95,7 +100,7 @@ public class Board extends javax.swing.JPanel {
                     }
                 }
                 snake.move();
-                //}
+                levelUpVelocity();
                 repaint();
             }
         });
@@ -130,6 +135,7 @@ public class Board extends javax.swing.JPanel {
         foodDeltaTime = 15000;
         food = new Food(snake, false);
         specialFoodVisible = false;
+        timesLevelUp = 1;
     }
 
     public Board(int numRows, int numCols, ScoreBoardIncrementer scoreBoard, JFrame parent) {
@@ -139,20 +145,37 @@ public class Board extends javax.swing.JPanel {
         playBoard = new Node[numRows][numCols];
         this.scoreBoard = scoreBoard;
         startGame = new StartGame(parent, true, this);
-        //pauseGame = new PauseGame(parent, true, this);
+        pauseGame = new PauseGame(parent, true, this);
     }
 
     public void initGame() {
         resetGame();
-        snakeTimer.start();
-        specialFoodTimer.start();
+        startTimers();
         scoreBoard.setScore(0);
     }
 
-    private void resetGame(){
+    public void startTimers() {
+        snakeTimer.start();
+        specialFoodTimer.start();
+    }
+
+    private void stopTimers() {
+        snakeTimer.stop();
+        specialFoodTimer.stop();
+    }
+
+    private void resetGame() {
         snake = new Snake(24, 24, 4);
     }
-    
+
+    private void levelUpVelocity() {
+        if (scoreBoard.getScore() / VALOR_RESTA_DELAY_DELTATIME == timesLevelUp) {
+            deltaTime -= VALOR_RESTA_DELAY_DELTATIME;
+            snakeTimer.setDelay(deltaTime);
+            timesLevelUp++;
+        }
+    }
+
     public void takePlayerName(String playerName) {
         this.playerName = playerName;
     }
@@ -174,8 +197,7 @@ public class Board extends javax.swing.JPanel {
 
     public void gameOver() throws IOException {
         if (colideBorders() || colideBody()) {
-            snakeTimer.stop();
-            specialFoodTimer.stop();
+            stopTimers();
             updateScores();
         }
     }
@@ -187,6 +209,7 @@ public class Board extends javax.swing.JPanel {
         startGame.saveList();
         startGame.printList();
     }
+
     private boolean colideBorders() {
         return next.getRow() < 0 || next.getRow() > numRows || next.getCol() < 0 || next.getCol() > numCols;
     }
@@ -229,7 +252,6 @@ public class Board extends javax.swing.JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
-        //paintPlayBoard(g2d);
         snake.paint(g2d, squareWidth(), squareHeight());
         food.paint(g2d, squareWidth(), squareHeight());
         if (specialFoodVisible) {
@@ -237,17 +259,7 @@ public class Board extends javax.swing.JPanel {
         }
     }
 
-    private void paintPlayBoard(Graphics2D g2d) {
-        for (int row = 0; row < playBoard.length; row++) {
-            for (int col = 0; col < playBoard[0].length; col++) {
-                drawSquare(g2d, row, col, new Color(51, 255, 51));
-            }
-        }
-    }
-
     private void drawSquare(Graphics2D g, int row, int col, Color color) {
-        /*Color colors[] = {new Color(51,255,51), new Color(255,51,51),
-           new Color(0,0,0), new Color(0,51,255),};*/
         int x = col * squareWidth();
         int y = row * squareHeight();
         g.setColor(color);
