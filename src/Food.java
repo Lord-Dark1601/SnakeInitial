@@ -17,8 +17,8 @@ public class Food {
     private Node position;
     private boolean isSpecial;
 
-    public Food(Snake snake, boolean isSpecial) {
-        position = createRandomNode(snake);
+    public Food(Snake snake, Walls walls, boolean isSpecial) {
+        position = createRandomNode(snake, walls);
         this.isSpecial = isSpecial;
 
     }
@@ -31,21 +31,18 @@ public class Food {
         return isSpecial;
     }
 
-    public Node createRandomNode(Snake snake) {
+    public Node createRandomNode(Snake snake, Walls walls) {
         List<Node> body = snake.getList();
+        List<Node> wallsList = walls.getList()[0];
         Boolean in = true;
         int row = 0;
         int col = 0;
         while (in) {
             row = (int) (Math.random() * 50);
             col = (int) (Math.random() * 50);
-
-            for (Node node : body) {
-                if (row == node.getRow() && col == node.getCol()) {
-                    break;
-                }
+            if (newFoodBody(body, row, col) && newFoodWallsList(wallsList, row, col)) {
+                in = false;
             }
-            in = false;
         }
         Node food = new Node(row, col);
         return food;
@@ -62,5 +59,13 @@ public class Food {
     public void delete() {
         position.setCol(-1);
         position.setRow(-1);
+    }
+
+    private boolean newFoodBody(List<Node> body, int row, int col) {
+        return body.stream().noneMatch((node) -> (row == node.getRow() && col == node.getCol()));
+    }
+
+    private boolean newFoodWallsList(List<Node> wallsList, int row, int col) {
+        return wallsList.stream().noneMatch((node) -> (row == node.getRow() && col == node.getCol()));
     }
 }

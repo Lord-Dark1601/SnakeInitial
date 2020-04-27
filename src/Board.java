@@ -8,8 +8,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
@@ -30,16 +28,24 @@ public class Board extends javax.swing.JPanel {
         public void keyPressed(KeyEvent e) {
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_UP:
-                    snake.setDirection(Direction.UP);
+                    if (snake.getDirection() != Direction.DOWN) {
+                        snake.setDirection(Direction.UP);
+                    }
                     break;
                 case KeyEvent.VK_DOWN:
-                    snake.setDirection(Direction.DOWN);
+                    if (snake.getDirection() != Direction.UP) {
+                        snake.setDirection(Direction.DOWN);
+                    }
                     break;
                 case KeyEvent.VK_RIGHT:
-                    snake.setDirection(Direction.RIGHT);
+                    if (snake.getDirection() != Direction.LEFT) {
+                        snake.setDirection(Direction.RIGHT);
+                    }
                     break;
                 case KeyEvent.VK_LEFT:
-                    snake.setDirection(Direction.LEFT);
+                    if (snake.getDirection() != Direction.RIGHT) {
+                        snake.setDirection(Direction.LEFT);
+                    }
                     break;
                 case KeyEvent.VK_P:
                     stopTimers();
@@ -54,12 +60,14 @@ public class Board extends javax.swing.JPanel {
     private int deltaTime;
     private int foodDeltaTime;
     private int timesLevelUp;
+    private boolean paintWalls;
     private boolean specialFoodVisible;
     private String playerName;
     private Snake snake;
     private Food food;
     private Food specialFood;
     private Node next;
+    private Walls walls;
     private Node[][] playBoard;
     private Timer snakeTimer;
     private Timer specialFoodTimer;
@@ -87,7 +95,7 @@ public class Board extends javax.swing.JPanel {
                 if (colideFood()) {
                     if (colideNormalFood()) {
                         snake.setRemainingNodesToCreate(VALOR_COMIDA_NORMAL);
-                        food = new Food(snake, false);
+                        food = new Food(snake, walls, false);
                         scoreBoard.incrementScore(VALOR_COMIDA_NORMAL);
                     } else {
                         snake.setRemainingNodesToCreate(VALOR_COMIDA_ESPECIAL);
@@ -97,6 +105,7 @@ public class Board extends javax.swing.JPanel {
                 }
                 snake.move();
                 levelUpVelocity();
+                updateMap();
                 repaint();
             }
         });
@@ -105,7 +114,7 @@ public class Board extends javax.swing.JPanel {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 if (!specialFoodVisible) {
-                    specialFood = new Food(snake, true);
+                    specialFood = new Food(snake, walls, true);
                     int invisibleFoodDeltaTime = (int) (Math.random() * 10000 + 30000);
                     specialFoodTimer.setDelay(invisibleFoodDeltaTime);
                     specialFoodVisible = true;
@@ -119,8 +128,6 @@ public class Board extends javax.swing.JPanel {
             }
         });
 
-        //snakeTimer.start();
-        //specialFoodTimer.start();
         MyKeyAdapter keyAdepter = new MyKeyAdapter();
         addKeyListener(keyAdepter);
     }
@@ -129,9 +136,11 @@ public class Board extends javax.swing.JPanel {
         snake = new Snake(24, 24, 4);
         deltaTime = 200;
         foodDeltaTime = 15000;
-        food = new Food(snake, false);
+        walls = new Walls(snake.getList());
+        food = new Food(snake, walls, false);
         specialFoodVisible = false;
         timesLevelUp = 1;
+        paintWalls = false;
     }
 
     public Board(int numRows, int numCols, ScoreBoardIncrementer scoreBoard, JFrame parent) {
@@ -172,6 +181,12 @@ public class Board extends javax.swing.JPanel {
         }
     }
 
+    private void updateMap() {
+        if (scoreBoard.getScore() > 5) {
+            paintWalls = true;
+        }
+    }
+
     public void takePlayerName(String playerName) {
         this.playerName = playerName;
     }
@@ -192,7 +207,7 @@ public class Board extends javax.swing.JPanel {
     }
 
     public void gameOver() throws IOException {
-        if (colideBorders() || colideBody()) {
+        if (colideBorders() || colideBody() || colideWalls()) {
             stopTimers();
             updateScores();
         }
@@ -213,6 +228,16 @@ public class Board extends javax.swing.JPanel {
     private boolean colideBody() {
         List<Node> body = snake.getList();
         return body.stream().anyMatch((node) -> (next.getRow() == node.getRow() && next.getCol() == node.getCol()));
+    }
+
+    private boolean colideWalls() {
+        List<Node> wallsList = walls.getList()[0];
+        if (paintWalls) {
+            if (wallsList.stream().anyMatch((node) -> (next.getRow() == node.getRow() && next.getCol() == node.getCol()))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private Node createNextNode() {
@@ -254,9 +279,12 @@ public class Board extends javax.swing.JPanel {
         if (specialFoodVisible) {
             specialFood.paint(g2d, squareWidth(), squareHeight());
         }
+        if (paintWalls) {
+            walls.paint(g2d, squareWidth(), squareHeight());
+        }
     }
 
-    private void paintPlayBoard(Graphics2D g2d) {
+    /*private void paintPlayBoard(Graphics2D g2d) {
         for (int row = 0; row < playBoard.length; row++) {
             for (int col = 0; col < playBoard[0].length; col++) {
                 drawSquare(g2d, row, col, Color.pink);
@@ -275,8 +303,7 @@ public class Board extends javax.swing.JPanel {
         g.setColor(color.darker());
         g.drawLine(x + 1, y + squareHeight() - 1, x + squareWidth() - 1, y + squareHeight() - 1);
         g.drawLine(x + squareWidth() - 1, y + squareHeight() - 1, x + squareWidth() - 1, y + 1);
-    }
-
+    }*/
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -285,6 +312,8 @@ public class Board extends javax.swing.JPanel {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+
+        setBackground(new java.awt.Color(255, 255, 255));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
