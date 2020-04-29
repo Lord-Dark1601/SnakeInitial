@@ -31,19 +31,19 @@ public class Food {
         return isSpecial;
     }
 
-    public Node createRandomNode(Snake snake, Walls walls) {
-        List<Node> body = snake.getList();
-        List<Node> wallsList = walls.getList()[0];
+    private Node createRandomNode(Snake snake, Walls wall) {
         Boolean in = true;
         int row = 0;
         int col = 0;
         while (in) {
             row = (int) (Math.random() * 50);
             col = (int) (Math.random() * 50);
-            if (newFoodBody(body, row, col) && newFoodWallsList(wallsList, row, col)) {
+
+            if (!snake.contains(row, col) && !wall.contains(row, col)) {
                 in = false;
             }
         }
+
         Node food = new Node(row, col);
         return food;
     }
@@ -61,11 +61,4 @@ public class Food {
         position.setRow(-1);
     }
 
-    private boolean newFoodBody(List<Node> body, int row, int col) {
-        return body.stream().noneMatch((node) -> (row == node.getRow() && col == node.getCol()));
-    }
-
-    private boolean newFoodWallsList(List<Node> wallsList, int row, int col) {
-        return wallsList.stream().noneMatch((node) -> (row == node.getRow() && col == node.getCol()));
-    }
 }

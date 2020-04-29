@@ -62,6 +62,7 @@ public class Board extends javax.swing.JPanel {
     private int timesLevelUp;
     private boolean paintWalls;
     private boolean specialFoodVisible;
+    private boolean mapCreated;
     private String playerName;
     private Snake snake;
     private Food food;
@@ -141,6 +142,7 @@ public class Board extends javax.swing.JPanel {
         specialFoodVisible = false;
         timesLevelUp = 1;
         paintWalls = false;
+        mapCreated = false;
     }
 
     public Board(int numRows, int numCols, ScoreBoardIncrementer scoreBoard, JFrame parent) {
@@ -184,7 +186,16 @@ public class Board extends javax.swing.JPanel {
     private void updateMap() {
         if (scoreBoard.getScore() > 5) {
             paintWalls = true;
+            if (!mapCreated) {
+                creatingMap();
+            }
         }
+    }
+
+    private void creatingMap() {
+        walls = new Walls(snake.getList());
+        walls.mapChosen(0);
+        mapCreated = true;
     }
 
     public void takePlayerName(String playerName) {
@@ -231,7 +242,7 @@ public class Board extends javax.swing.JPanel {
     }
 
     private boolean colideWalls() {
-        List<Node> wallsList = walls.getList()[0];
+        List<Node> wallsList = walls.getList();
         if (paintWalls) {
             if (wallsList.stream().anyMatch((node) -> (next.getRow() == node.getRow() && next.getCol() == node.getCol()))) {
                 return true;

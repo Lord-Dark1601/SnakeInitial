@@ -1,6 +1,9 @@
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,32 +18,38 @@ import java.util.List;
  */
 public class Walls {
 
-    private List<Node> map0;
-    private List<Node> map1;
-    private List<Node> map2;
-    private List<Node> map3;
-    private List<Node> map4;
-    private List<Node> map5;
-    private List<Node> map6;
-    private List<Node> map7;
-    private List<Node> map8;
-    private List<Node> map9;
-    private List[] wallsList;
+    private List<Node> currentMap;
     private List<Node> snakeBody;
+    private String currentMapName;
+    private static final String FIRST_MAP = "SquaresMap.csv";
+    private static final String SECOND_MAP = "DivisionMap.csv";
 
     public Walls(List<Node> snakeBody) {
-        wallsList = new List[10];
         this.snakeBody = snakeBody;
-        insertRandomNodes();
-        wallsList[0] = map0;
+        currentMap = new ArrayList<>();
     }
 
-    public List[] getList() {
-        return wallsList;
+    public List<Node> getList() {
+        return currentMap;
+    }
+
+    public void mapChosen(int index) {
+        switch (index) {
+            case 1:
+                currentMapName = FIRST_MAP;
+                mapByFile(currentMapName);
+                break;
+            case 2:
+                currentMapName = SECOND_MAP;
+                mapByFile(currentMapName);
+                break;
+
+            default:
+                insertRandomNodes();
+        }
     }
 
     private void insertRandomNodes() {
-        map0 = new ArrayList<>();
         int count = 0;
         int nodesCount;
         while (count < 100) {
@@ -56,15 +65,50 @@ public class Walls {
             }
             if (nodesCount == snakeBody.size()) {
                 Node currentNode = new Node(x, y);
-                map0.add(currentNode);
+                currentMap.add(currentNode);
                 count++;
             }
         }
     }
 
+    private void mapByFile(String mapName) {
+        BufferedReader in = null;
+        try {
+            try {
+                in = new BufferedReader(new FileReader(mapName));
+                String line;
+                while ((line = in.readLine()) != null) {
+                    String[] coordenates = line.split(";");
+                    int initRow = Integer.parseInt(coordenates[0]);
+                    int initCol = Integer.parseInt(coordenates[1]);
+                    int endRow = Integer.parseInt(coordenates[2]);
+                    int endCol = Integer.parseInt(coordenates[3]);
+                    makeNodes(initRow, initCol, endRow, endCol);
+                }
+            } finally {
+                if (in != null) {
+                    in.close();
+                }
+            }
+        } catch (IOException ex) {
+        }
+    }
+
+    private void makeNodes(int initRow, int initCol, int endRow, int endCol) {
+        for (int row = initRow; row < endRow; row++) {
+            for (int col = initCol; col < endCol; col++) {
+                currentMap.add(new Node(row, col));
+            }
+        }
+    }
+
     public void paint(Graphics g, int squareWidth, int squareHeight) {
-        map0.forEach((node) -> {
+        currentMap.forEach((node) -> {
             Util.drawSquare(g, node.getRow(), node.getCol(), squareWidth, squareHeight, new Color(153, 102, 0));
         });
+    }
+
+    public boolean contains(int row, int col) {
+        return currentMap.stream().anyMatch((node) -> (node.getRow() == row && node.getCol() == col));
     }
 }
