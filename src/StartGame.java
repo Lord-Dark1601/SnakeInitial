@@ -31,9 +31,14 @@ public class StartGame extends javax.swing.JDialog {
     private Player currentPlayer;
     private List<Player> players;
     private static final String FILE_NAME = "scores.txt";
+    private int levelSelect;
 
     /**
      * Creates new form StartGame
+     *
+     * @param parent
+     * @param modal
+     * @param board
      */
     public StartGame(JFrame parent, boolean modal, Board board) {
         super(parent, modal);
@@ -49,22 +54,17 @@ public class StartGame extends javax.swing.JDialog {
     }
 
     public void makeList(Player player) throws IOException {
-        players = new ArrayList<Player>();
+        players = new ArrayList<>();
         currentPlayer = player;
         players.add(player);
 
-        ObjectInputStream in = null;
-        try {
-            in = new ObjectInputStream(new BufferedInputStream(new FileInputStream(FILE_NAME)));
+        //Corverted to try-with-resources
+        try (ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream(FILE_NAME)))) {
             while (true) {
                 Player p = (Player) in.readObject();
                 players.add(p);
             }
         } catch (ClassNotFoundException | EOFException | FileNotFoundException ex) {
-        } finally {
-            if (in != null) {
-                in.close();
-            }
         }
     }
 
@@ -80,15 +80,10 @@ public class StartGame extends javax.swing.JDialog {
 
     public void saveList() throws IOException {
 
-        ObjectOutputStream out = null;
-        try {
-            out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(FILE_NAME)));
+        //Corverted to try-with-resources
+        try (ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(FILE_NAME)))) {
             for (Player p : players) {
                 out.writeObject(p);
-            }
-        } finally {
-            if (out != null) {
-                out.close();
             }
         }
     }
@@ -120,6 +115,7 @@ public class StartGame extends javax.swing.JDialog {
         startGameButton = new javax.swing.JButton();
         exitButton = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
+        boxSelectOfLevel = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -143,6 +139,8 @@ public class StartGame extends javax.swing.JDialog {
             }
         });
 
+        boxSelectOfLevel.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Aleatorio", "Nivel 1", "Nivel 2" }));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -155,24 +153,27 @@ public class StartGame extends javax.swing.JDialog {
                 .addGap(83, 83, 83))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                            .addGap(96, 96, 96)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addComponent(jLabel2)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGroup(layout.createSequentialGroup()
-                            .addContainerGap()
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addGap(96, 96, 96)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel2)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE))))
+                        .addGap(18, 18, 18)
+                        .addComponent(boxSelectOfLevel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(92, 92, 92)
                         .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(56, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -182,7 +183,8 @@ public class StartGame extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(boxSelectOfLevel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -192,7 +194,7 @@ public class StartGame extends javax.swing.JDialog {
                     .addComponent(startGameButton)
                     .addComponent(exitButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 14, Short.MAX_VALUE)
+                .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, 21, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -201,7 +203,9 @@ public class StartGame extends javax.swing.JDialog {
 
     private void startGameButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startGameButtonActionPerformed
         if (!jTextField1.getText().trim().equalsIgnoreCase("") && jTextField1.getText() != null) {
+            levelSelect = boxSelectOfLevel.getSelectedIndex();
             playerName = jTextField1.getText();
+            board.takeLevelOfMap(levelSelect);
             board.takePlayerName(playerName);
             board.initGame();
             this.setVisible(false);
@@ -257,6 +261,7 @@ public class StartGame extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> boxSelectOfLevel;
     private javax.swing.JButton exitButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

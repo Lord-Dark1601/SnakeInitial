@@ -16,6 +16,9 @@ public class PauseGame extends javax.swing.JDialog {
 
     /**
      * Creates new form PauseGame
+     * @param parent
+     * @param modal
+     * @param board
      */
     public PauseGame(java.awt.Frame parent, boolean modal, Board board) {
         super(parent, modal);

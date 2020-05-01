@@ -1,5 +1,4 @@
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
@@ -55,29 +54,19 @@ public class Board extends javax.swing.JPanel {
         }
     }
 
-    private int numRows;
-    private int numCols;
-    private int deltaTime;
-    private int foodDeltaTime;
-    private int timesLevelUp;
-    private boolean paintWalls;
-    private boolean specialFoodVisible;
-    private boolean mapCreated;
+    private int numRows, numCols, deltaTime, foodDeltaTime, timesLevelUp, levelSelect;
+    private boolean paintWalls, specialFoodVisible, mapCreated;
     private String playerName;
     private Snake snake;
-    private Food food;
-    private Food specialFood;
+    private Food food, specialFood;
     private Node next;
     private Walls walls;
     private Node[][] playBoard;
-    private Timer snakeTimer;
-    private Timer specialFoodTimer;
+    private Timer snakeTimer, specialFoodTimer;
     private StartGame startGame;
     private PauseGame pauseGame;
     private ScoreBoardIncrementer scoreBoard;
-    private static final int VALOR_COMIDA_NORMAL = 1;
-    private static final int VALOR_COMIDA_ESPECIAL = 4;
-    private static final int VALOR_RESTA_DELAY_DELTATIME = 25;
+    private static final int VALOR_COMIDA_NORMAL = 1, VALOR_COMIDA_ESPECIAL = 4, VALOR_RESTA_DELAY_DELTATIME = 25;
 
     public Board() {
 
@@ -85,6 +74,7 @@ public class Board extends javax.swing.JPanel {
         initComponents();
         myInit();
 
+        //Make lambda expresion??
         snakeTimer = new Timer(deltaTime, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -111,6 +101,7 @@ public class Board extends javax.swing.JPanel {
             }
         });
 
+        //Make lambda expresion??
         specialFoodTimer = new Timer(foodDeltaTime, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
@@ -135,28 +126,28 @@ public class Board extends javax.swing.JPanel {
 
     private void myInit() {
         snake = new Snake(24, 24, 4);
-        deltaTime = 200;
-        foodDeltaTime = 15000;
         walls = new Walls(snake.getList());
         food = new Food(snake, walls, false);
-        specialFoodVisible = false;
+        deltaTime = 200;
+        foodDeltaTime = 15000;
         timesLevelUp = 1;
         paintWalls = false;
         mapCreated = false;
+        specialFoodVisible = false;
     }
 
     public Board(int numRows, int numCols, ScoreBoardIncrementer scoreBoard, JFrame parent) {
         this();
         this.numCols = numCols;
         this.numRows = numRows;
-        playBoard = new Node[numRows][numCols];
         this.scoreBoard = scoreBoard;
+        playBoard = new Node[numRows][numCols];
         startGame = new StartGame(parent, true, this);
         pauseGame = new PauseGame(parent, true, this);
     }
 
     public void initGame() {
-        resetGame();
+        myInit();
         startTimers();
         scoreBoard.setScore(0);
     }
@@ -169,10 +160,6 @@ public class Board extends javax.swing.JPanel {
     private void stopTimers() {
         snakeTimer.stop();
         specialFoodTimer.stop();
-    }
-
-    private void resetGame() {
-        snake = new Snake(24, 24, 4);
     }
 
     private void levelUpVelocity() {
@@ -194,12 +181,16 @@ public class Board extends javax.swing.JPanel {
 
     private void creatingMap() {
         walls = new Walls(snake.getList());
-        walls.mapChosen(0);
+        walls.mapChosen(levelSelect);
         mapCreated = true;
     }
 
     public void takePlayerName(String playerName) {
         this.playerName = playerName;
+    }
+
+    public void takeLevelOfMap(int levelSelect) {
+        this.levelSelect = levelSelect;
     }
 
     private boolean colideFood() {
@@ -295,26 +286,6 @@ public class Board extends javax.swing.JPanel {
         }
     }
 
-    /*private void paintPlayBoard(Graphics2D g2d) {
-        for (int row = 0; row < playBoard.length; row++) {
-            for (int col = 0; col < playBoard[0].length; col++) {
-                drawSquare(g2d, row, col, Color.pink);
-            }
-        }
-    }
-
-    private void drawSquare(Graphics2D g, int row, int col, Color color) {
-        int x = col * squareWidth();
-        int y = row * squareHeight();
-        g.setColor(color);
-        g.fillRect(x + 1, y + 1, squareWidth() - 2, squareHeight() - 2);
-        g.setColor(color.brighter());
-        g.drawLine(x, y + squareHeight() - 1, x, y);
-        g.drawLine(x, y, x + squareWidth() - 1, y);
-        g.setColor(color.darker());
-        g.drawLine(x + 1, y + squareHeight() - 1, x + squareWidth() - 1, y + squareHeight() - 1);
-        g.drawLine(x + squareWidth() - 1, y + squareHeight() - 1, x + squareWidth() - 1, y + 1);
-    }*/
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

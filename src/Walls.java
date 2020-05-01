@@ -18,11 +18,9 @@ import java.util.List;
  */
 public class Walls {
 
-    private List<Node> currentMap;
-    private List<Node> snakeBody;
+    private List<Node> currentMap, snakeBody;
     private String currentMapName;
-    private static final String FIRST_MAP = "SquaresMap.csv";
-    private static final String SECOND_MAP = "DivisionMap.csv";
+    private static final String FIRST_MAP = "SquaresMap.csv", SECOND_MAP = "DivisionMap.csv";
 
     public Walls(List<Node> snakeBody) {
         this.snakeBody = snakeBody;
@@ -72,10 +70,9 @@ public class Walls {
     }
 
     private void mapByFile(String mapName) {
-        BufferedReader in = null;
         try {
-            try {
-                in = new BufferedReader(new FileReader(mapName));
+            //Corverted to try-with-resources
+            try (BufferedReader in = new BufferedReader(new FileReader(mapName))) {
                 String line;
                 while ((line = in.readLine()) != null) {
                     String[] coordenates = line.split(";");
@@ -85,18 +82,14 @@ public class Walls {
                     int endCol = Integer.parseInt(coordenates[3]);
                     makeNodes(initRow, initCol, endRow, endCol);
                 }
-            } finally {
-                if (in != null) {
-                    in.close();
-                }
             }
         } catch (IOException ex) {
         }
     }
 
     private void makeNodes(int initRow, int initCol, int endRow, int endCol) {
-        for (int row = initRow; row < endRow; row++) {
-            for (int col = initCol; col < endCol; col++) {
+        for (int row = initRow; row <= endRow; row++) {
+            for (int col = initCol; col <= endCol; col++) {
                 currentMap.add(new Node(row, col));
             }
         }
