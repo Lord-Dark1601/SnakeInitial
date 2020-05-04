@@ -53,11 +53,17 @@ public class StartGame extends javax.swing.JDialog {
         jLabel1.setFont(new Font("Serif", Font.PLAIN, 20));
     }
 
-    public void makeList(Player player) throws IOException {
-        players = new ArrayList<>();
+    public void startGameCalls(Player player) throws IOException {
         currentPlayer = player;
-        players.add(player);
+        makeList();
+        orderList();
+        saveList();
+        printList();
+    }
 
+    private void makeList() throws IOException {
+        players = new ArrayList<>();
+        players.add(currentPlayer);
         //Corverted to try-with-resources
         try (ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(new FileInputStream(FILE_NAME)))) {
             while (true) {
@@ -68,17 +74,14 @@ public class StartGame extends javax.swing.JDialog {
         }
     }
 
-    public void orderList() {
+    private void orderList() {
         Collections.sort(players);
         while (players.size() > 5) {
             players.remove(players.size() - 1);
         }
-        players.forEach((p) -> {
-            System.out.println(p);
-        });
     }
 
-    public void saveList() throws IOException {
+    private void saveList() throws IOException {
 
         //Corverted to try-with-resources
         try (ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(FILE_NAME)))) {
@@ -88,10 +91,9 @@ public class StartGame extends javax.swing.JDialog {
         }
     }
 
-    public void printList() {
+    private void printList() {
         String finalScores = "";
         jLabel3.setText("Your score is " + currentPlayer.getScore());
-
         finalScores = players.stream().map((p) -> p + "\n").reduce(finalScores, String::concat);
         jLabel4.setText(finalScores);
 
@@ -116,6 +118,7 @@ public class StartGame extends javax.swing.JDialog {
         exitButton = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
         boxSelectOfLevel = new javax.swing.JComboBox<>();
+        jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -140,6 +143,8 @@ public class StartGame extends javax.swing.JDialog {
         });
 
         boxSelectOfLevel.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Aleatorio", "Nivel 1", "Nivel 2" }));
+
+        jLabel6.setText("Level:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -169,7 +174,9 @@ public class StartGame extends javax.swing.JDialog {
                                     .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE))))
                         .addGap(18, 18, 18)
-                        .addComponent(boxSelectOfLevel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(boxSelectOfLevel, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(92, 92, 92)
                         .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -179,7 +186,9 @@ public class StartGame extends javax.swing.JDialog {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel6))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
@@ -205,8 +214,7 @@ public class StartGame extends javax.swing.JDialog {
         if (!jTextField1.getText().trim().equalsIgnoreCase("") && jTextField1.getText() != null) {
             levelSelect = boxSelectOfLevel.getSelectedIndex();
             playerName = jTextField1.getText();
-            board.takeLevelOfMap(levelSelect);
-            board.takePlayerName(playerName);
+            board.takeStartGameFields(playerName, levelSelect);
             board.initGame();
             this.setVisible(false);
         } else {
@@ -268,6 +276,7 @@ public class StartGame extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JButton startGameButton;
     // End of variables declaration//GEN-END:variables

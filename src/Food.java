@@ -37,12 +37,10 @@ public class Food {
         while (in) {
             row = (int) (Math.random() * 50);
             col = (int) (Math.random() * 50);
-
             if (!snake.contains(row, col) && !wall.contains(row, col)) {
                 in = false;
             }
         }
-
         Node food = new Node(row, col);
         return food;
     }

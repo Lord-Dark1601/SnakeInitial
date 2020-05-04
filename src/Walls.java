@@ -55,10 +55,10 @@ public class Walls {
             int x = (int) (Math.random() * 46 + 2);
             int y = (int) (Math.random() * 46 + 2);
             for (Node node : snakeBody) {
-                if (node.getRow() == x && node.getCol() == y) {
-                    break;
-                } else {
+                if (node.getRow() != x || node.getCol() != y) {
                     nodesCount++;
+                } else {
+                    break;
                 }
             }
             if (nodesCount == snakeBody.size()) {

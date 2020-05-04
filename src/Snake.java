@@ -27,7 +27,6 @@ public class Snake {
             Node restOfBody = new Node(row + i, col);
             body.add(restOfBody);
         }
-
         direction = Direction.UP;
     }
 

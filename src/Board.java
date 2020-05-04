@@ -18,6 +18,7 @@ import javax.swing.Timer;
 /**
  *
  * @author victoralonso
+ * @Ft. @authors VictorLafuente & Vicent Serra
  */
 public class Board extends javax.swing.JPanel {
 
@@ -61,7 +62,6 @@ public class Board extends javax.swing.JPanel {
     private Food food, specialFood;
     private Node next;
     private Walls walls;
-    private Node[][] playBoard;
     private Timer snakeTimer, specialFoodTimer;
     private StartGame startGame;
     private PauseGame pauseGame;
@@ -141,7 +141,6 @@ public class Board extends javax.swing.JPanel {
         this.numCols = numCols;
         this.numRows = numRows;
         this.scoreBoard = scoreBoard;
-        playBoard = new Node[numRows][numCols];
         startGame = new StartGame(parent, true, this);
         pauseGame = new PauseGame(parent, true, this);
     }
@@ -185,11 +184,8 @@ public class Board extends javax.swing.JPanel {
         mapCreated = true;
     }
 
-    public void takePlayerName(String playerName) {
+    public void takeStartGameFields(String playerName, int levelSelect) {
         this.playerName = playerName;
-    }
-
-    public void takeLevelOfMap(int levelSelect) {
         this.levelSelect = levelSelect;
     }
 
@@ -217,10 +213,7 @@ public class Board extends javax.swing.JPanel {
 
     private void updateScores() throws IOException {
         Player p = new Player(playerName, scoreBoard.getScore());
-        startGame.makeList(p);
-        startGame.orderList();
-        startGame.saveList();
-        startGame.printList();
+        startGame.startGameCalls(p);
     }
 
     private boolean colideBorders() {
@@ -275,7 +268,6 @@ public class Board extends javax.swing.JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
-        //paintPlayBoard(g2d);
         snake.paint(g2d, squareWidth(), squareHeight());
         food.paint(g2d, squareWidth(), squareHeight());
         if (specialFoodVisible) {
