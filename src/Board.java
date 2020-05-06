@@ -28,23 +28,27 @@ public class Board extends javax.swing.JPanel {
         public void keyPressed(KeyEvent e) {
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_UP:
-                    if (snake.getDirection() != Direction.DOWN) {
+                    if (snake.getDirection() != Direction.DOWN && puesNoLoSeLaVerdadDirections) {
                         snake.setDirection(Direction.UP);
+                        puesNoLoSeLaVerdadDirections = false;
                     }
                     break;
                 case KeyEvent.VK_DOWN:
-                    if (snake.getDirection() != Direction.UP) {
+                    if (snake.getDirection() != Direction.UP && puesNoLoSeLaVerdadDirections) {
                         snake.setDirection(Direction.DOWN);
+                        puesNoLoSeLaVerdadDirections = false;
                     }
                     break;
                 case KeyEvent.VK_RIGHT:
-                    if (snake.getDirection() != Direction.LEFT) {
+                    if (snake.getDirection() != Direction.LEFT && puesNoLoSeLaVerdadDirections) {
                         snake.setDirection(Direction.RIGHT);
+                        puesNoLoSeLaVerdadDirections = false;
                     }
                     break;
                 case KeyEvent.VK_LEFT:
-                    if (snake.getDirection() != Direction.RIGHT) {
+                    if (snake.getDirection() != Direction.RIGHT && puesNoLoSeLaVerdadDirections) {
                         snake.setDirection(Direction.LEFT);
+                        puesNoLoSeLaVerdadDirections = false;
                     }
                     break;
                 case KeyEvent.VK_P:
@@ -56,7 +60,7 @@ public class Board extends javax.swing.JPanel {
     }
 
     private int numRows, numCols, deltaTime, foodDeltaTime, timesLevelUp, levelSelect;
-    private boolean paintWalls, specialFoodVisible, mapCreated;
+    private boolean paintWalls, specialFoodVisible, mapCreated, puesNoLoSeLaVerdadDirections;
     private String playerName;
     private Snake snake;
     private Food food, specialFood;
@@ -97,6 +101,7 @@ public class Board extends javax.swing.JPanel {
                 snake.move();
                 levelUpVelocity();
                 updateMap();
+                puesNoLoSeLaVerdadDirections = true;
                 repaint();
             }
         });
@@ -134,6 +139,7 @@ public class Board extends javax.swing.JPanel {
         paintWalls = false;
         mapCreated = false;
         specialFoodVisible = false;
+        puesNoLoSeLaVerdadDirections = true;
     }
 
     public Board(int numRows, int numCols, ScoreBoardIncrementer scoreBoard, JFrame parent) {

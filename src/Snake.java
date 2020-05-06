@@ -16,6 +16,7 @@ import java.util.List;
 public class Snake {
 
     private Direction direction;
+    private Direction[] arrayDirection;
     private List<Node> body;
     private int remainingNodesToCreate = 0;
 
